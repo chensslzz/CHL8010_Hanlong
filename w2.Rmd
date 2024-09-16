@@ -1,0 +1,42 @@
+---
+title: "w2"
+output: html_document
+date: "2024-09-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+```{r}
+library(here)
+library(tidyverse)
+library(dplyr)
+library(usethis)
+here()
+
+
+```
+
+```{r}
+data1 <- read.csv("maternalmortality.csv", header = TRUE)
+
+
+data2 <- select(data1, Country.Name, X2000:X2019)
+
+data3 <- pivot_longer(data2, cols=c(X2000:X2019),
+                    names_to='year',
+                    names_prefix = 'X',
+                    values_to='MatMor') 
+
+data3$year <- as.numeric(data3$year)
+
+write.csv(data3, file = "DATA/data3.csv", row.names = FALSE)
+```
+
