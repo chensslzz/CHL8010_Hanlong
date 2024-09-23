@@ -25,4 +25,6 @@ Disaster4 <- mutate(Disaster3,
 Disaster5 <- group_by(Disaster4,Year, ISO)
 Disaster6 <- summarise(Disaster5, drought = max(drought),
     earthquake = max(earthquake))
+
+write.csv(Disaster6, file = "disaster_clean.csv", row.names = FALSE)
 ```
