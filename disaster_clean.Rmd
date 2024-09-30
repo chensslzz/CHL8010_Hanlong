@@ -9,6 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r}
+#read data
 Disaster1 <- read.csv("Original_Data/disaster.csv", header = TRUE)
 ```
 
