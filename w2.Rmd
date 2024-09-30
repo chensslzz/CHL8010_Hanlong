@@ -75,7 +75,6 @@ week33 <- function(input_file1){
 
 
 ```{r}
-#test
 under5_function <- week33("under5mortality.csv")
 infant_function <- week33("infantmortality.csv")
 neonatal_function <- week33("neonatalmortality.csv")
@@ -108,11 +107,10 @@ disaster9 <- dplyr::rename(disaster7, year = Year)
 
 
 ```{r}
-c_data2 <- c_data1
-c_data2$year <- c_data2$year + 1
-c_data2$conflict_Yes <- !is.na(c_data2$conflict_id)
-c_data2$conflict_Yes <- 1*c_data2$conflict_Yes
-
+c_data2 <- group_by(c_data1, ISO, year)
+c_data3 <- summarize(c_data2, death = sum(best))
+c_data4 <- mutate(c_data3, is.conflict = ifelse(death < 25, 0, 1))
+c_data5 <- mutate(c_data4, year = year + 1)
 ```
 
 ```{r}
@@ -124,9 +122,17 @@ all1 <- list(allmor1,disaster9, cov_data1, c_data2)
 
 all2 <- reduce(all1, full_join, by = c("year", "ISO"))
 
+all3 <- list(c_data5, allmor1, disaster9)
 
+all4 <- reduce(all3, full_join, by = c('ISO', 'year')) 
+
+all5 <- left_join(cov_data1, all4, by = c('ISO', 'year') )
+
+final_data <-  mutate(all5,
+                is.conflict = replace_na(is.conflict, 0), 
+                drought = replace_na(drought, 0),
+                earthquake = replace_na(earthquake, 0), 
+                death = replace_na(death, 0))
+
+write.csv(final_data, file = "armed_conflict.csv", row.names = FALSE)
 ```
-
-
-
-
