@@ -1,6 +1,6 @@
 ---
 title: "Visualization"
-format: html
+format: pdf
 ---
 
 ## Armed Conflict Data Visualization
