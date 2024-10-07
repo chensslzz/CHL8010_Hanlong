@@ -1,12 +1,12 @@
 ---
 title: "Visualization"
 format: html
-editor: Hanlong
 ---
 
 ## Armed Conflict Data Visualization
 
 ```{r}
+#| output: false
 library(flextable)
 library(xtable)
 library(table1)
@@ -33,7 +33,12 @@ v2$drought <- factor(v2$drought, levels = c(0, 1), labels = c("No", "Yes"))
 v2$earthquake <- factor(v2$earthquake, levels = c(0, 1), labels = c("No", "Yes"))
 
 
-table1(~ drought+ earthquake+  Under_5_Mortality+ Infant_Mortality + Neonatal_Mortality + Maternal_Mortality| is.conflict, data = v2, caption = "Table of baseline characteristics", render.continuous = c(.="Median [Min, Max]"), overall=c(left="Total"), topclass="Rtable1-grid Rtable1-center")
+table1(~ drought+ earthquake+  Under_5_Mortality+ Infant_Mortality + Neonatal_Mortality
+       + Maternal_Mortality| is.conflict, 
+       data = v2, caption = "Table of baseline characteristics", 
+       render.continuous = c(.="Median [Min, Max]"),
+       overall=c(left="Total"), 
+       topclass="Rtable1-grid Rtable1-center")
 
 
 ```
@@ -41,20 +46,23 @@ table1(~ drought+ earthquake+  Under_5_Mortality+ Infant_Mortality + Neonatal_Mo
 ```{r}
 
 finaldata <- read.csv("Clean_Data/armed_conflict_final.csv", header =TRUE)
-finaldata |>
-  dplyr::select(country_name, ISO, year, Maternal_Mortality) |>
-  dplyr::filter(year < 2018) |>
-  arrange(ISO, year) |>
-  group_by(ISO) |>
-  mutate(diffmatmor = Maternal_Mortality - Maternal_Mortality[1L]) 
+finaldata1 <-  dplyr::select(finaldata, country_name, ISO, year, Maternal_Mortality, is.conflict)
+finaldata1 <-  dplyr::filter(finaldata1, year < 2018)
+finaldata1 <-  arrange(finaldata1, ISO, year)
+finaldata1 <-  group_by(finaldata1, ISO)
+finaldata1 <-   mutate(finaldata1, diffmatmor = Maternal_Mortality - Maternal_Mortality[1L]) 
+finaldata2 <- filter(finaldata1, diffmatmor > 0)
 ```
 
 ```{r}
-finaldata |>
-  ggplot(aes(x = year, y = Maternal_Mortality, group = ISO)) +
-  geom_line(aes(color = as.factor(is.conflict)), alpha = 0.5) +
-  xlim(c(2000,2019)) +
+#| warning: false
+plot1 <-ggplot(finaldata2, aes(x = year, y = Maternal_Mortality, group = ISO)) +
+  geom_line(aes(color = as.factor(ISO)), alpha = 0.5) +
+  xlim(c(2000,2017)) +
   scale_y_continuous(trans='log10') + 
   labs(y = "Maternal mortality", x = "Year", color = "Armed conflict") + 
   theme_bw()
+
+plot1
+
 ```
