@@ -1,0 +1,60 @@
+---
+title: "Visualization"
+format: html
+editor: Hanlong
+---
+
+## Armed Conflict Data Visualization
+
+```{r}
+library(flextable)
+library(xtable)
+library(table1)
+library(texreg)
+library(gtsummary)
+library(modelsummary)
+library(tidyverse)
+```
+
+```{r}
+
+```
+
+```{r}
+v2 <- read.csv("Clean_Data/armed_conflict_final.csv", header =TRUE)
+
+label(v2$Under_5_Mortality) <- "Under 5"        # Under 5 mortality rate
+label(v2$Infant_Mortality) <- "Infant"         # Infant mortality rate
+label(v2$Neonatal_Mortality) <- "Neonatal"     # Neonatal mortality rate
+label(v2$Maternal_Mortality) <- "Maternal"     # Maternal mortality rate
+
+v2$is.conflict <- factor(v2$is.conflict, levels = c(0, 1), labels = c("NO", "YES"))
+v2$drought <- factor(v2$drought, levels = c(0, 1), labels = c("No", "Yes"))
+v2$earthquake <- factor(v2$earthquake, levels = c(0, 1), labels = c("No", "Yes"))
+
+
+table1(~ drought+ earthquake+  Under_5_Mortality+ Infant_Mortality + Neonatal_Mortality + Maternal_Mortality| is.conflict, data = v2, caption = "Table of baseline characteristics", render.continuous = c(.="Median [Min, Max]"), overall=c(left="Total"), topclass="Rtable1-grid Rtable1-center")
+
+
+```
+
+```{r}
+
+finaldata <- read.csv("Clean_Data/armed_conflict_final.csv", header =TRUE)
+finaldata |>
+  dplyr::select(country_name, ISO, year, Maternal_Mortality) |>
+  dplyr::filter(year < 2018) |>
+  arrange(ISO, year) |>
+  group_by(ISO) |>
+  mutate(diffmatmor = Maternal_Mortality - Maternal_Mortality[1L]) 
+```
+
+```{r}
+finaldata |>
+  ggplot(aes(x = year, y = Maternal_Mortality, group = ISO)) +
+  geom_line(aes(color = as.factor(is.conflict)), alpha = 0.5) +
+  xlim(c(2000,2019)) +
+  scale_y_continuous(trans='log10') + 
+  labs(y = "Maternal mortality", x = "Year", color = "Armed conflict") + 
+  theme_bw()
+```
