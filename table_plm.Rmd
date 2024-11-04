@@ -8,10 +8,12 @@ date: "2024-10-28"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(plm)
 ```
 
 ```{r, results = 'hide'}
-plmdata <- read.csv("Clean_Data/armed_conflict_final.csv")
+plmdata <- read.csv("Clean_Data/finaldata.csv", header = TRUE)
 ```
 
 ```{r}

@@ -17,12 +17,15 @@ library(tidyverse)
 ```
 
 ```{r}
+v2 <- read.csv("Clean_Data/armed_conflict.csv", header =TRUE)
 
 ```
 
 ```{r}
-v2 <- read.csv("Clean_Data/armed_conflict_final.csv", header =TRUE)
-
+names(v2)[names(v2) == "Mortality.x"] <- "Under_5_Mortality"
+names(v2)[names(v2) == "Mortality.y"] <- "Infant_Mortality"
+names(v2)[names(v2) == "Mortality.x.x"] <- "Neonatal_Mortality"
+names(v2)[names(v2) == "Mortality.y.y"] <- "Maternal_Mortality"
 label(v2$Under_5_Mortality) <- "Under 5"        # Under 5 mortality rate
 label(v2$Infant_Mortality) <- "Infant"         # Infant mortality rate
 label(v2$Neonatal_Mortality) <- "Neonatal"     # Neonatal mortality rate
@@ -40,12 +43,15 @@ table1(~ drought+ earthquake+  Under_5_Mortality+ Infant_Mortality + Neonatal_Mo
        overall=c(left="Total"), 
        topclass="Rtable1-grid Rtable1-center")
 
+```
+```{r}
+write.csv(v2, file = "Clean_Data/finaldata.csv", row.names = FALSE)
 
 ```
 
 ```{r}
 
-finaldata <- read.csv("Clean_Data/armed_conflict_final.csv", header =TRUE)
+finaldata <- read.csv("Clean_Data/finaldata.csv", header =TRUE)
 finaldata1 <-  dplyr::select(finaldata, country_name, ISO, year, Maternal_Mortality, is.conflict)
 finaldata1 <-  dplyr::filter(finaldata1, year < 2018)
 finaldata1 <-  arrange(finaldata1, ISO, year)
