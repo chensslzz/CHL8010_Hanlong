@@ -1,0 +1,149 @@
+---
+title: "Bootstrap"
+output: html_document
+date: "2024-11-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(boot)
+
+```
+
+```{r}
+
+data <- read.csv(file = "Clean_Data/finaldata1.csv")
+
+```
+
+```{r}
+# Filtering data for the year 2017
+data_2017 <- subset(data, year == 2017)
+
+data_2017_complete <- subset(data_2017, !is.na(matmor))
+
+countries_conflict_2017 <- sum(data_2017_complete$armconf1 == 1)
+
+countries_no_conflict_2017 <- sum(data_2017_complete$armconf1 == 0)
+
+print(paste("Countries exposed to armed conflict in 2017:", countries_conflict_2017))
+print(paste("Countries not exposed to armed conflict in 2017:", countries_no_conflict_2017))
+```
+
+```{r}
+# Calculating the sample median of maternal mortality rate in countries exposed to armed conflict in 2017
+matmor_conflict_2017 <- data_2017_complete$matmor[data_2017_complete$armconf1 == 1]
+median_matmor_conflict_2017 <- median(matmor_conflict_2017, na.rm = TRUE)
+median_matmor_conflict_2017
+
+matmor_n_conflict_2017 <- data_2017_complete$matmor[data_2017_complete$armconf1 == 0]
+median_matmor_n_conflict_2017 <- median(matmor_n_conflict_2017, na.rm = TRUE)
+median_matmor_n_conflict_2017
+
+matmor_med_diff <- abs(median_matmor_conflict_2017 - median_matmor_n_conflict_2017)
+matmor_med_diff
+
+```
+
+```{r}
+
+B <- 100
+
+bootstrap_medians <- numeric(B)
+
+set.seed(8010) 
+for (i in 1:B) {
+  resample <- sample(matmor_conflict_2017, size = length(matmor_conflict_2017), replace = TRUE)
+  bootstrap_medians[i] <- median(resample)
+}
+
+bootstrap_se <- sd(bootstrap_medians)
+
+bootstrap_se
+```
+
+INFMOR
+```{r}
+infmor.arm1 <- data |>
+  dplyr::filter(year == 2017 & !is.na(infmor) & armconf1 == 1) |>
+  dplyr::select(ISO, infmor)
+infmor.arm0 <- data |>
+  dplyr::filter(year == 2017 & !is.na(infmor) & armconf1 == 0) |>
+  dplyr::select(ISO, infmor)
+
+set.seed(2024)
+B <- 1000
+med.diff <- rep(NA, B)
+for(b in 1:B){
+  resamp.arm1 <- infmor.arm1[sample(nrow(infmor.arm1), size = nrow(infmor.arm1), replace = TRUE),]
+  resamp.arm0 <- infmor.arm0[sample(nrow(infmor.arm0), size = nrow(infmor.arm0), replace = TRUE),]
+  med.diff[b] <- median(resamp.arm1$infmor) - median(resamp.arm0$infmor)
+}
+head(resamp.arm1, 12)
+```
+MATMOR
+```{r}
+matmor.arm1 <- data |>
+  dplyr::filter(year == 2017 & !is.na(matmor) & armconf1 == 1) |>
+  dplyr::select(ISO, matmor)
+matmor.arm0 <- data |>
+  dplyr::filter(year == 2017 & !is.na(matmor) & armconf1 == 0) |>
+  dplyr::select(ISO, matmor)
+
+set.seed(2024)
+B <- 1000
+med.diff <- rep(NA, B)
+for(b in 1:B){
+  resamp.arm1 <- matmor.arm1[sample(nrow(matmor.arm1), size = nrow(matmor.arm1), replace = TRUE),]
+  resamp.arm0 <- matmor.arm0[sample(nrow(matmor.arm0), size = nrow(matmor.arm0), replace = TRUE),]
+  med.diff[b] <- median(resamp.arm1$matmor) - median(resamp.arm0$matmor)
+}
+head(resamp.arm1, 12)
+
+```
+
+```{r}
+neomor.arm1 <- data |>
+  dplyr::filter(year == 2017 & !is.na(neomor) & armconf1 == 1) |>
+  dplyr::select(ISO, neomor)
+neomor.arm0 <- data |>
+  dplyr::filter(year == 2017 & !is.na(neomor) & armconf1 == 0) |>
+  dplyr::select(ISO, neomor)
+
+set.seed(2024)
+B <- 1000
+med.diff <- rep(NA, B)
+for(b in 1:B){
+  resamp.arm1 <- neomor.arm1[sample(nrow(neomor.arm1), size = nrow(neomor.arm1), replace = TRUE),]
+  resamp.arm0 <- neomor.arm0[sample(nrow(neomor.arm0), size = nrow(neomor.arm0), replace = TRUE),]
+  med.diff[b] <- median(resamp.arm1$neomor) - median(resamp.arm0$neomor)
+}
+head(resamp.arm1, 12)
+```
+
+
+```{r}
+un5mor.arm1 <- data |>
+  dplyr::filter(year == 2017 & !is.na(un5mor) & armconf1 == 1) |>
+  dplyr::select(ISO, un5mor)
+un5mor.arm0 <- data |>
+  dplyr::filter(year == 2017 & !is.na(un5mor) & armconf1 == 0) |>
+  dplyr::select(ISO, un5mor)
+
+set.seed(2024)
+B <- 1000
+med.diff <- rep(NA, B)
+for(b in 1:B){
+  resamp.arm1 <- un5mor.arm1[sample(nrow(un5mor.arm1), size = nrow(un5mor.arm1), replace = TRUE),]
+  resamp.arm0 <- un5mor.arm0[sample(nrow(un5mor.arm0), size = nrow(un5mor.arm0), replace = TRUE),]
+  med.diff[b] <- median(resamp.arm1$un5mor) - median(resamp.arm0$un5mor)
+}
+head(resamp.arm1, 12)
+```
+
+```{r}
+
+```
